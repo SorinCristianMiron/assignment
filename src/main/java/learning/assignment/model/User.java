@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="Users")
@@ -28,6 +29,10 @@ public class User implements UserDetails {
     private String email;
     private ArrayList<Roles> roles;
     private String description;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "ownerId")
+    private Set<Project> project;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

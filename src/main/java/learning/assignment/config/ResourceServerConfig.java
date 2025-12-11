@@ -9,6 +9,8 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,11 +28,14 @@ public class ResourceServerConfig {
     @Bean
     public SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register", "/auth/login",
                                 "/swagger-ui.html","swagger-ui/**", "swagger-ui**", "/v3/api-docs/**", "/v3/api-docs**").permitAll() // Allow public access
                         .anyRequest().authenticated()
                 )
+//                .formLogin(login -> login.loginPage("/auth/login").permitAll())
+//                .logout(LogoutConfigurer::permitAll)
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
 
         return http.build();
@@ -38,8 +43,7 @@ public class ResourceServerConfig {
 
     @Bean
     public AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userService);
         provider.setPasswordEncoder(passwordEncoder());
         return new ProviderManager(provider);
     }

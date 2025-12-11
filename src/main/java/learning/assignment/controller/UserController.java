@@ -1,19 +1,17 @@
 package learning.assignment.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpServletRequest;
 import learning.assignment.dto.UserAuthDTO;
+import learning.assignment.dto.UserDTO;
 import learning.assignment.model.User;
 import learning.assignment.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.validation.annotation.Validated;
@@ -38,9 +36,17 @@ public class UserController {
         this.jwtEncoder = jwtEncoder;
     }
 
+    @PatchMapping("/updateUser")
+    public ResponseEntity<Object> updateUser(@RequestParam("id") Long userId, @RequestBody UserDTO userDTO) {
+        String response = userService.updateUser(userId, userDTO);
+        if (response.equals("success")) return new ResponseEntity<>(response, HttpStatus.OK);
+        else if (response.equals("not_logged_in")) return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        else return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @GetMapping("/getUserById")
-    public ResponseEntity<Object> getUserById(@RequestParam("id") Long id, HttpServletRequest request) {
-        Optional<User> user = userService.getUserById(id,request);
+    public ResponseEntity<Object> getUserById(@RequestParam("id") Long id) {
+        Optional<User> user = userService.getUserById(id);
         if (user.isPresent()) {
             return new ResponseEntity<>(
                     user.get(),
@@ -56,7 +62,7 @@ public class UserController {
         User user = userService.registerUser(userAuthDTO);
         return new ResponseEntity<>(
                 Map.of("message", "User registered successfully", "username", user.getUsername()),
-                HttpStatus.OK);
+                HttpStatus.CREATED);
     }
 
     @Operation(security = {})

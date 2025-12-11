@@ -13,7 +13,7 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String projectId;
+    private Long projectId;
     private String title;
     private String status;
     private Date dueDate;
