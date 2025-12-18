@@ -2,13 +2,17 @@ package learning.assignment.controller;
 
 import learning.assignment.dto.ProjectDTO;
 import learning.assignment.model.Project;
-import learning.assignment.service.ProjectService;
+import learning.assignment.service.project.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Validated
+@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -19,33 +23,22 @@ public class ProjectController {
     }
 
     @PostMapping("/createProject")
-    public ResponseEntity<String> createProject(@RequestBody ProjectDTO projectDTO) {
-        String response = projectService.createProject(projectDTO);
-        if (response.equals("success")) return new ResponseEntity<>(response, HttpStatus.CREATED);
-        else return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Project> createProject(@RequestBody ProjectDTO projectDTO) {
+        return new ResponseEntity<>(projectService.createProject(projectDTO), HttpStatus.CREATED);
     }
 
     @PatchMapping("/updateProject")
-    public ResponseEntity<String> updateProject(@RequestParam Long projectId, @RequestBody ProjectDTO projectDTO) {
-        String response = projectService.updateProject(projectId, projectDTO);
-        if (response.equals("success")) return new ResponseEntity<>(response, HttpStatus.OK);
-        else if (response.equals("not_found")) return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        else return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Project> updateProject(@RequestParam Long projectId, @RequestBody ProjectDTO projectDTO) {
+        return ResponseEntity.ok(projectService.updateProject(projectId, projectDTO));
     }
 
     @DeleteMapping("/deleteProject")
-    public ResponseEntity<String> deleteProject(@RequestParam Long projectId) {
-        String response = projectService.deleteProject(projectId);
-        if (response.equals("success")) return new ResponseEntity<>(response, HttpStatus.OK);
-        else if (response.equals("not_found")) return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        else return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Boolean> deleteProject(@RequestParam Long projectId) {
+        return ResponseEntity.ok(projectService.deleteProject(projectId));
     }
 
     @GetMapping("/getProject")
-    public ResponseEntity<Object> getProject(@RequestParam Long projectId) {
-        Object response = projectService.getProject(projectId);
-        if (response instanceof Project) return new ResponseEntity<>(response, HttpStatus.OK);
-        if (response.equals("not_found")) return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        else return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Project> getProject(@RequestParam Long projectId) {
+        return ResponseEntity.ok(projectService.getProject(projectId));
     }
 }

@@ -2,13 +2,17 @@ package learning.assignment.controller;
 
 import learning.assignment.dto.TaskDTO;
 import learning.assignment.model.Task;
-import learning.assignment.service.TaskService;
+import learning.assignment.service.task.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
+@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 public class TaskController {
     
     private final TaskService taskService;
@@ -19,34 +23,22 @@ public class TaskController {
     }
 
     @PostMapping("/createTask")
-    public ResponseEntity<String> createTask(@RequestParam Long projectId, @RequestBody TaskDTO taskDTO) {
-        String response = taskService.createTask(projectId, taskDTO);
-        if (response.equals("success")) return new ResponseEntity<>(response, HttpStatus.CREATED);
-        else if (response.equals("not_found")) return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        else return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Task> createTask(@RequestBody TaskDTO taskDTO) {
+        return new ResponseEntity<>(taskService.createTask(taskDTO), HttpStatus.CREATED);
     }
 
     @PatchMapping("/updateTask")
-    public ResponseEntity<String> updateTask(@RequestParam Long taskId, @RequestBody TaskDTO taskDTO) {
-        String response = taskService.updateTask(taskId, taskDTO);
-        if (response.equals("success")) return new ResponseEntity<>(response, HttpStatus.OK);
-        else if (response.equals("not_found")) return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        else return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Task> updateTask(@RequestParam Long taskId, @RequestBody TaskDTO taskDTO) {
+        return ResponseEntity.ok(taskService.updateTask(taskId, taskDTO));
     }
 
     @DeleteMapping("/deleteTask")
-    public ResponseEntity<String> deleteTask(@RequestParam Long taskId) {
-        String response = taskService.deleteTask(taskId);
-        if (response.equals("success")) return new ResponseEntity<>(response, HttpStatus.OK);
-        else if (response.equals("not_found")) return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        else return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Boolean> deleteTask(@RequestParam Long taskId) {
+        return ResponseEntity.ok(taskService.deleteTask(taskId));
     }
 
     @GetMapping("/getTask")
-    public ResponseEntity<Object> getTask(@RequestParam Long taskId) {
-        Object response = taskService.getTask(taskId);
-        if (response instanceof Task) return new ResponseEntity<>(response, HttpStatus.OK);
-        if (response.equals("not_found")) return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        else return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<Task> getTask(@RequestParam Long taskId) {
+        return ResponseEntity.ok(taskService.getTask(taskId));
     }
 }
