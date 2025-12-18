@@ -1,5 +1,11 @@
 package learning.assignment.dto;
 
-public class UserDTO {
+import learning.assignment.util.Roles;
 
+import java.util.Set;
+
+public class UserDTO {
+    public String email;
+    public Set<Roles> roles;
+    public String description;
 }
