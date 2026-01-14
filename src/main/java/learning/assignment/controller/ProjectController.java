@@ -1,5 +1,6 @@
 package learning.assignment.controller;
 
+import jakarta.validation.Valid;
 import learning.assignment.dto.ProjectDTO;
 import learning.assignment.model.Project;
 import learning.assignment.service.project.ProjectService;
@@ -23,12 +24,12 @@ public class ProjectController {
     }
 
     @PostMapping("/createProject")
-    public ResponseEntity<Project> createProject(@RequestBody ProjectDTO projectDTO) {
+    public ResponseEntity<Project> createProject(@Valid @RequestBody ProjectDTO projectDTO) {
         return new ResponseEntity<>(projectService.createProject(projectDTO), HttpStatus.CREATED);
     }
 
     @PatchMapping("/updateProject")
-    public ResponseEntity<Project> updateProject(@RequestParam Long projectId, @RequestBody ProjectDTO projectDTO) {
+    public ResponseEntity<Project> updateProject(@RequestParam Long projectId, @Valid @RequestBody ProjectDTO projectDTO) {
         return ResponseEntity.ok(projectService.updateProject(projectId, projectDTO));
     }
 

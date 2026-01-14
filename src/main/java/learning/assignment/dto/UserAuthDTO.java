@@ -1,10 +1,11 @@
 package learning.assignment.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public class UserAuthDTO {
-    @NotNull
+    @NotBlank
     public String username;
-    @NotNull
+
+    @NotBlank
     public String password;
 }
