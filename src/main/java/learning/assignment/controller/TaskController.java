@@ -1,5 +1,6 @@
 package learning.assignment.controller;
 
+import jakarta.validation.Valid;
 import learning.assignment.dto.TaskDTO;
 import learning.assignment.model.Task;
 import learning.assignment.service.task.TaskService;
@@ -23,12 +24,12 @@ public class TaskController {
     }
 
     @PostMapping("/createTask")
-    public ResponseEntity<Task> createTask(@RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<Task> createTask(@Valid @RequestBody TaskDTO taskDTO) {
         return new ResponseEntity<>(taskService.createTask(taskDTO), HttpStatus.CREATED);
     }
 
     @PatchMapping("/updateTask")
-    public ResponseEntity<Task> updateTask(@RequestParam Long taskId, @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<Task> updateTask(@RequestParam Long taskId, @Valid @RequestBody TaskDTO taskDTO) {
         return ResponseEntity.ok(taskService.updateTask(taskId, taskDTO));
     }
 

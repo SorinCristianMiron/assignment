@@ -1,6 +1,7 @@
 package learning.assignment.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import learning.assignment.dto.UserAuthDTO;
 import learning.assignment.dto.UserDTO;
 import learning.assignment.dto.UserSearchDTO;
@@ -36,7 +37,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/updateUser")
-    public ResponseEntity<User> updateUser(@RequestParam("id") Long userId, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<User> updateUser(@RequestParam("id") Long userId, @Valid @RequestBody UserDTO userDTO) {
         return ResponseEntity.ok(userServiceImpl.updateUser(userId, userDTO));
     }
 
@@ -48,7 +49,7 @@ public class UserController {
 
     @Operation(security = {}) // removes security
     @PostMapping("/auth/register")
-    public ResponseEntity<Object> register(@RequestBody UserAuthDTO userAuthDTO) {
+    public ResponseEntity<Object> register(@Valid @RequestBody UserAuthDTO userAuthDTO) {
         User user = userAuthService.registerUser(userAuthDTO);
         return new ResponseEntity<>(
                 Map.of("message", "User registered successfully", "username", user.getUsername()),
@@ -57,7 +58,7 @@ public class UserController {
 
     @Operation(security = {})
     @PostMapping("/auth/login")
-    public ResponseEntity<Object> login(@RequestBody UserAuthDTO userAuthDTO) {
+    public ResponseEntity<Object> login(@Valid @RequestBody UserAuthDTO userAuthDTO) {
         String token = userAuthService.JWTLogin(userAuthDTO);
         return new ResponseEntity<>(
                 Map.of("access_token", token),
@@ -66,7 +67,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PostMapping("/searchUser")
-    public ResponseEntity<Page<User>> searchUser(@RequestBody UserSearchDTO userSearchDTO,
+    public ResponseEntity<Page<User>> searchUser(@Valid @RequestBody UserSearchDTO userSearchDTO,
                                                  @RequestParam(name = "page", defaultValue = "0") Integer page,
                                                  @RequestParam(name = "size", defaultValue = "5") Integer size,
                                                  @RequestParam(name = "sort", defaultValue = "[{\"field\":\"username\",\"direction\":\"asc\"}]") String sort) {

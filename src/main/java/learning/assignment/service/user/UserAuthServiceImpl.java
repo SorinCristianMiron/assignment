@@ -88,10 +88,4 @@ public class UserAuthServiceImpl extends UserServiceImpl implements UserDetailsS
     public UserDetails loadUserByUsername(String username) {
         return userRepository.findUserByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
-
-
-
-
-    //TODO:
-    //flyway migr, edgecase uri exceptii,
 }
